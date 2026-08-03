@@ -1,28 +1,37 @@
 using API.Data;
+using API.DTOs;
 using API.Entities;
+using API.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
-public class MembersController(AppDbContext appDbContext) : ControllerBase
+public class MembersController : BaseApiController
 {
-    [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<AppUser>>> GetMembers()
+    private readonly AppDbContext _context;
+
+    public MembersController(AppDbContext context)
     {
-        var members = await appDbContext.AppUsers.ToListAsync();
-        return members;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<AppUser>> GetMembers(Guid id)
+    [HttpGet]
+    public async Task<ActionResult<IReadOnlyList<UserDTO>>> GetMembers()
     {
-        var member = await appDbContext.AppUsers.FindAsync(id);
+        var users = await _context.AppUsers.Select(x => x.ToUserDto()).ToListAsync();
+        return users;
+    }
 
-        if (member is null) return NotFound();
+    [Authorize]
+    [HttpGet("{id}")]
+    public async Task<ActionResult<UserDTO>> GetMembers(Guid id)
+    {
+        var user = await _context.AppUsers.FindAsync(id);
 
-        return member;
+        if (user is null) return NotFound();
+
+        return user.ToUserDto();
     }
 }
