@@ -10,7 +10,7 @@ import { AccountService } from '../../../core/services/account-service';
   styleUrl: './register.css',
 })
 export class Register {
-  private accountService = inject(AccountService);
+  private readonly accountService = inject(AccountService);
   protected creds = {} as RegisterCreds;
   cancelRegister = output<boolean>();
 

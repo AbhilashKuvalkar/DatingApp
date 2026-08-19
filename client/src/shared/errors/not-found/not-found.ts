@@ -8,7 +8,7 @@ import { Component, inject } from '@angular/core';
   styleUrl: './not-found.css',
 })
 export class NotFound {
-  private location = inject(Location);
+  private readonly location = inject(Location);
 
   goBack(){
     this.location.back();

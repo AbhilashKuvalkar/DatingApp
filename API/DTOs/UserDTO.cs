@@ -8,7 +8,7 @@ public class UserDTO
 
     public required string DisplayName { get; set; }
 
-    public string ImageUrl { get; set; } = string.Empty;
+    public string? ImageUrl { get; set; }
 }
 
 public class UserAuthDTO : UserDTO

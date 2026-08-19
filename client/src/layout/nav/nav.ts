@@ -1,8 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AccountService } from '../../core/services/account-service';
 import { Router, RouterLink, RouterLinkActive } from "@angular/router";
 import { ToastService } from '../../core/services/toast-service';
+import { themes } from '../theme';
 
 @Component({
   selector: 'app-nav',
@@ -10,11 +11,24 @@ import { ToastService } from '../../core/services/toast-service';
   templateUrl: './nav.html',
   styleUrl: './nav.css',
 })
-export class Nav {
+export class Nav implements OnInit {
+  private readonly toastService = inject(ToastService);
+  private readonly router = inject(Router);
+
   protected accountService = inject(AccountService);
-  protected toastService = inject(ToastService);
-  private router = inject(Router);
   protected creds: any = {};
+  protected selectedTheme = signal<string>(localStorage.getItem("theme") || "default");
+  protected themes = themes;
+
+  ngOnInit(): void {
+    document.documentElement.setAttribute("data-theme", this.selectedTheme());
+  }
+
+  handleSelectTheme(theme: string) {
+    this.selectedTheme.set(theme);
+    localStorage.setItem("theme", theme);
+    document.documentElement.setAttribute("data-theme", theme);
+  }
 
   login() {
     this.accountService
@@ -41,7 +55,7 @@ export class Nav {
                   message += arr.join(" ");
                   message += "<br />";
                 }
-                
+
               });
 
             }
